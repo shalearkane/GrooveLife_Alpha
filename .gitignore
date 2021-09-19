@@ -27,6 +27,9 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+# Personal Python env folder
+test/
+
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
@@ -57,9 +60,11 @@ coverage.xml
 
 # Django stuff:
 *.log
+*.pot
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+media
 
 # Flask stuff:
 instance/
@@ -127,3 +132,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# Visual Studio Code # 
+.vscode/* 
+!.vscode/settings.json 
+!.vscode/tasks.json 
+!.vscode/launch.json 
+!.vscode/extensions.json 
+.history
