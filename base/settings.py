@@ -82,7 +82,7 @@ WSGI_APPLICATION = "base.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "GrooveLife_Alpha",
+        "NAME": "GrooveLife_Alpha1",
         "USER": "root",
         "PASSWORD": "password",
     }
