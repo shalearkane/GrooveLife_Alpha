@@ -36,22 +36,22 @@ class Artist(models.Model):
     def __str__(self):
         return self.name
 
-class Album(models.Model):
-    artist = models.ForeignKey(Artist, on_delete=SET('Anonymous'))
-    album_title = models.CharField(max_length=500)
-    album_logo = models.FileField(upload_to="album" , default="settings.MEDIA_ROOT/default.png")
-    def __str__(self):
-        return self.album_title + ' - ' + self.artist.name
-
 class Genre(models.Model):
     name = models.CharField(max_length=50)
     def __str__(self):
         return self.name
 
-class Track(models.Model):
-    album = models.ForeignKey(Album, on_delete=SET('Independent Track'))
-    track_title = models.CharField(max_length=250)
-    audio_file = models.FileField(upload_to="track" , default="settings.MEDIA_ROOT/default.png")
-    
+class Album(models.Model):
+    artist = models.ForeignKey(Artist, on_delete=SET(1))
+    genre = models.ForeignKey(Genre,on_delete=SET(1))
+    album_title = models.CharField(max_length=500)
+    album_logo = models.FileField(upload_to="album" , default="settings.MEDIA_ROOT/default.png")
     def __str__(self):
-        return self.song_title
+        return self.album_title + ' - ' + self.artist.name
+
+class Track(models.Model):
+    album = models.ForeignKey(Album, on_delete=SET(1))
+    track_title = models.CharField(max_length=250)
+    audio_file = models.FileField(upload_to="track" , default="asdf")
+    def __str__(self):
+        return self.track_title
