@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from .manager import UserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
@@ -12,8 +13,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
 
     # Tells Django that the UserManager class defined above should manage
     # objects of this type.
@@ -28,30 +29,44 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         return self.username.split()[0]
 
+
 class Artist(models.Model):
     name = models.CharField(max_length=255)
-    thumbnail = models.ImageField(upload_to="artist", default="settings.MEDIA_ROOT/default.png")
-    bio = models.TextField(verbose_name='Artist Bio', null=True, blank=True)
-    country = models.CharField(max_length=255, blank = True)
+    thumbnail = models.ImageField(
+        upload_to="artist", default=settings.MEDIA_ROOT + "/artist/default.png"
+    )
+    bio = models.TextField(verbose_name="Artist Bio", null=True, blank=True)
+    country = models.CharField(max_length=255, blank=True)
+
     def __str__(self):
         return self.name
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=50)
+
     def __str__(self):
         return self.name
 
+
 class Album(models.Model):
     artist = models.ForeignKey(Artist, on_delete=SET(1))
-    genre = models.ForeignKey(Genre,on_delete=SET(1))
+    genre = models.ForeignKey(Genre, on_delete=SET(1))
     album_title = models.CharField(max_length=500)
-    album_logo = models.FileField(upload_to="album" , default="settings.MEDIA_ROOT/default.png")
+    album_logo = models.FileField(
+        upload_to="album", default=settings.MEDIA_ROOT + "/album_art/default.png"
+    )
+
     def __str__(self):
-        return self.album_title + ' - ' + self.artist.name
+        return self.album_title + " - " + self.artist.name
+
 
 class Track(models.Model):
-    album = models.ForeignKey(Album, on_delete=SET(1))
+    album = models.ForeignKey(Album, related_name="track", on_delete=SET(1))
     track_title = models.CharField(max_length=250)
-    audio_file = models.FileField(upload_to="track" , default="asdf")
+    audio_file = models.FileField(
+        upload_to="track", default=settings.MEDIA_ROOT + "/track/track.mp3"
+    )
+
     def __str__(self):
         return self.track_title

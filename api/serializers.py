@@ -1,4 +1,5 @@
-from .models import User
+from django.db.models import fields
+from .models import User, Track, Album, Genre, Artist
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -46,19 +47,40 @@ class UserSerializer(serializers.ModelSerializer):
         # salting passwords. That means
         # we need to remove the password field from the
         # `validated_data` dictionary before iterating over it.
-        
+
         try:
             password = validated_data.pop("password")
         except KeyError:
             pass
-        else :
+        else:
             if password is not None:
                 instance.set_password(password)
-        finally : 
+        finally:
             for (key, value) in validated_data.items():
                 setattr(instance, key, value)
 
-
         instance.save()
-
         return instance
+
+
+class TrackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Track
+        depth = 2
+        fields = "__all__"
+
+
+class AlbumSerializer(serializers.ModelSerializer):
+    track = TrackSerializer(many=True)
+
+    class Meta:
+        model = Album
+        depth = 1
+        fields = ("artist", "genre", "album_title", "album_logo", "track")
+
+
+class ListAlbumSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Album
+        depth = 1
+        fields = "__all__"
