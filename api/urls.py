@@ -3,16 +3,20 @@ from rest_framework_simplejwt import views as jwt_views
 from rest_framework.routers import DefaultRouter
 from .views import (
     AlbumView,
+    ArtistView,
     SignUpView,
     HelloWorldTestView,
     TrackView,
     UserRetrieveUpdateView,
     LogoutAndBlacklistRefreshTokenForUserView,
+    LikedSongsView,
+    HistoryView,
 )
 
 router = DefaultRouter()
 router.register(r"tracks", TrackView, basename="track")
 router.register(r"albums", AlbumView, basename="album")
+router.register(r"artists", ArtistView, basename="artist")
 
 urlpatterns = [
     path(
@@ -26,6 +30,8 @@ urlpatterns = [
         LogoutAndBlacklistRefreshTokenForUserView.as_view(),
         name="logout_and_blacklist_refresh_token",
     ),
+    path("likedsongs/", LikedSongsView.as_view(), name="liked_songs"),
+    path("history/", HistoryView.as_view(), name="history"),
     path("test/", HelloWorldTestView.as_view(), name="hello_world_test_view"),
 ]
 

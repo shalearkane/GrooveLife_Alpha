@@ -1,8 +1,9 @@
+from enum import unique
 from django.conf import settings
 from django.db import models
 from .manager import UserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.db.models.deletion import DO_NOTHING, SET
+from django.db.models.deletion import CASCADE, DO_NOTHING, SET
 
 # Create your models here.
 class User(AbstractBaseUser, PermissionsMixin):
@@ -20,7 +21,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # objects of this type.
     objects = UserManager()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.email
 
     def get_full_name(self):
@@ -38,14 +39,14 @@ class Artist(models.Model):
     bio = models.TextField(verbose_name="Artist Bio", null=True, blank=True)
     country = models.CharField(max_length=255, blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class Genre(models.Model):
     name = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -57,7 +58,7 @@ class Album(models.Model):
         upload_to="album", default=settings.MEDIA_ROOT + "/album_art/default.png"
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.album_title + " - " + self.artist.name
 
 
@@ -68,5 +69,26 @@ class Track(models.Model):
         upload_to="track", default=settings.MEDIA_ROOT + "/track/track.mp3"
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.track_title
+
+
+class LikedSong(models.Model):
+    user = models.ForeignKey(User, related_name="user_like", on_delete=CASCADE)
+    track = models.ForeignKey(Track, related_name="liked_track", on_delete=CASCADE)
+    time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "track")
+
+    def __str__(self) -> str:
+        return self.user.username + " - " + self.track.track_title
+
+
+class History(models.Model):
+    user = models.ForeignKey(User, related_name="user_listened", on_delete=CASCADE)
+    track = models.ForeignKey(Track, related_name="listened_track", on_delete=CASCADE)
+    time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return self.user.username + " - " + self.track.track_title

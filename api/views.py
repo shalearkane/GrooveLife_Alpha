@@ -1,14 +1,20 @@
 from os import access
+from django.db.models import query
 from rest_framework import serializers, status, viewsets
+from rest_framework import permissions
+from rest_framework import response
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Album, Track
+from .models import Album, Artist, History, LikedSong, Track
 
 from .serializers import (
     AlbumSerializer,
+    ArtistSerializer,
+    HistorySerializer,
+    LikedSongSerializer,
     ListAlbumSerializer,
     SignUpSerializer,
     TrackSerializer,
@@ -94,4 +100,53 @@ class AlbumView(viewsets.ViewSet):
         queryset = Album.objects.all()
         album = get_object_or_404(queryset, pk=pk)
         serializer = AlbumSerializer(album)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ArtistView(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    serializer_class = ArtistSerializer
+    queryset = Artist.objects.all()
+
+
+class LikedSongsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        request.data["user"] = request.user.id
+        serializer = LikedSongSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            likedSong = serializer.save()
+            if likedSong:
+                json = serializer.data
+                return Response(json, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        queryset = LikedSong.objects.filter(user=request.user).order_by("-time")
+        serializer = LikedSongSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request):
+        query = LikedSong.objects.filter(track=request.data["track"], user=request.user)
+        query.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class HistoryView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        request.data["user"] = request.user.id
+        serializer = HistorySerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            listenedSong = serializer.save()
+            if listenedSong:
+                json = serializer.data
+                return Response(json, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        queryset = History.objects.filter(user=request.user).order_by("-time")
+        serializer = HistorySerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

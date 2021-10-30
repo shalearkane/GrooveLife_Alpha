@@ -1,5 +1,5 @@
 from django.db.models import fields
-from .models import User, Track, Album, Genre, Artist
+from .models import History, LikedSong, User, Track, Album, Genre, Artist
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -83,4 +83,30 @@ class ListAlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
         depth = 1
+        fields = "__all__"
+
+
+class ArtistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Artist
+        fields = "__all__"
+
+
+# PrimaryKeyRelatedField may be used to represent the target of the relationship using its primary key.
+
+class LikedSongSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=False)
+    track = serializers.PrimaryKeyRelatedField(queryset=Track.objects.all(), many=False)
+
+    class Meta:
+        model = LikedSong
+        fields = "__all__"
+
+
+class HistorySerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=False)
+    track = serializers.PrimaryKeyRelatedField(queryset=Track.objects.all(), many=False)
+
+    class Meta:
+        model = History
         fields = "__all__"
