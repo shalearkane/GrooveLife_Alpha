@@ -94,6 +94,7 @@ class ArtistSerializer(serializers.ModelSerializer):
 
 # PrimaryKeyRelatedField may be used to represent the target of the relationship using its primary key.
 
+
 class LikedSongSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=False)
     track = serializers.PrimaryKeyRelatedField(queryset=Track.objects.all(), many=False)
@@ -101,6 +102,12 @@ class LikedSongSerializer(serializers.ModelSerializer):
     class Meta:
         model = LikedSong
         fields = "__all__"
+
+    def to_representation(self, instance):
+        print(super().to_representation(instance))
+        response = super().to_representation(instance)
+        response["track"] = TrackSerializer(instance.track).data
+        return response
 
 
 class HistorySerializer(serializers.ModelSerializer):
@@ -110,3 +117,9 @@ class HistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = History
         fields = "__all__"
+
+    def to_representation(self, instance):
+        print(super().to_representation(instance))
+        response = super().to_representation(instance)
+        response["track"] = TrackSerializer(instance.track).data
+        return response
