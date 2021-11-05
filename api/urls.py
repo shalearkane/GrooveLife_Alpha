@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     AlbumView,
     ArtistView,
+    GenreView,
     SignUpView,
     HelloWorldTestView,
     TrackView,
@@ -17,6 +18,7 @@ router = DefaultRouter()
 router.register(r"tracks", TrackView, basename="track")
 router.register(r"albums", AlbumView, basename="album")
 router.register(r"artists", ArtistView, basename="artist")
+router.register(r"genres", GenreView, basename="genre")
 
 urlpatterns = [
     path(

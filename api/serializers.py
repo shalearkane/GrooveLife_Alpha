@@ -87,8 +87,34 @@ class ListAlbumSerializer(serializers.ModelSerializer):
 
 
 class ArtistSerializer(serializers.ModelSerializer):
+    album_artist = ListAlbumSerializer(many=True)
+
     class Meta:
         model = Artist
+        depth = 1
+        fields = ("name", "thumbnail", "bio", "country", "album_artist")
+
+
+class ListArtistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Artist
+        depth = 1
+        fields = "__all__"
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    album_genre = ListAlbumSerializer(many=True)
+
+    class Meta:
+        model = Genre
+        depth = 1
+        fields = ("name", "album_genre")
+
+
+class ListGenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        depth = 1
         fields = "__all__"
 
 

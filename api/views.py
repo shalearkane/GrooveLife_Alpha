@@ -8,14 +8,17 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Album, Artist, History, LikedSong, Track
+from .models import Album, Artist, Genre, History, LikedSong, Track
 
 from .serializers import (
     AlbumSerializer,
     ArtistSerializer,
+    GenreSerializer,
     HistorySerializer,
     LikedSongSerializer,
     ListAlbumSerializer,
+    ListArtistSerializer,
+    ListGenreSerializer,
     SignUpSerializer,
     TrackSerializer,
     UserSerializer,
@@ -103,10 +106,34 @@ class AlbumView(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ArtistView(viewsets.ModelViewSet):
+class ArtistView(viewsets.ViewSet):
     permission_classes = (AllowAny,)
-    serializer_class = ArtistSerializer
-    queryset = Artist.objects.all()
+
+    def list(self, request):
+        queryset = Artist.objects.all()
+        serializer = ListArtistSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, pk=None):
+        queryset = Artist.objects.all()
+        artist = get_object_or_404(queryset, pk=pk)
+        serializer = ArtistSerializer(artist)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GenreView(viewsets.ViewSet):
+    permission_classes = (AllowAny,)
+
+    def list(self, request):
+        queryset = Genre.objects.all()
+        serializer = ListGenreSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, pk=None):
+        queryset = Genre.objects.all()
+        genre = get_object_or_404(queryset, pk=pk)
+        serializer = GenreSerializer(genre)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class LikedSongsView(APIView):
