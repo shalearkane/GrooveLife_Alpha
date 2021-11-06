@@ -1,5 +1,6 @@
 from os import access
 from django.db.models import query
+from django.http.response import JsonResponse
 from rest_framework import serializers, status, viewsets
 from rest_framework import permissions
 from rest_framework import response
@@ -150,9 +151,15 @@ class LikedSongsView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        queryset = LikedSong.objects.filter(user=request.user).order_by("-time")
-        serializer = LikedSongSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if "track" in request.data:
+            isLiked = LikedSong.objects.filter(
+                user=request.user, track=request.data["track"]
+            ).exists()
+            return JsonResponse({"isLiked": isLiked})
+        else:
+            queryset = LikedSong.objects.filter(user=request.user).order_by("-time")
+            serializer = LikedSongSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request):
         query = LikedSong.objects.filter(track=request.data["track"], user=request.user)
