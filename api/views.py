@@ -140,6 +140,7 @@ class GenreView(viewsets.ViewSet):
 class LikedSongsView(APIView):
     permission_classes = (IsAuthenticated,)
 
+    # post request adds a like song
     def post(self, request):
         request.data["user"] = request.user.id
         serializer = LikedSongSerializer(data=request.data)
@@ -150,17 +151,20 @@ class LikedSongsView(APIView):
                 return Response(json, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request):
-        if "track" in request.data:
-            isLiked = LikedSong.objects.filter(
-                user=request.user, track=request.data["track"]
-            ).exists()
-            return JsonResponse({"isLiked": isLiked})
-        else:
-            queryset = LikedSong.objects.filter(user=request.user).order_by("-time")
-            serializer = LikedSongSerializer(queryset, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+    # put request queries if a liked song exists (get request was not working)
+    def put(self, request):
+        isLiked = LikedSong.objects.filter(
+            user=request.user, track=request.data["track"]
+        ).exists()
+        return JsonResponse({"isLiked": isLiked})
 
+    # get request gets the list of all liked songs by the user
+    def get(self, request):
+        queryset = LikedSong.objects.filter(user=request.user).order_by("-time")
+        serializer = LikedSongSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # delete request removes the liked song
     def delete(self, request):
         query = LikedSong.objects.filter(track=request.data["track"], user=request.user)
         query.delete()
