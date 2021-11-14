@@ -1,9 +1,7 @@
-from os import access
-from django.db.models import query
 from django.http.response import JsonResponse
-from rest_framework import serializers, status, viewsets
-from rest_framework import permissions
-from rest_framework import response
+from rest_framework import status, viewsets
+from rest_framework import filters
+from rest_framework import generics
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -188,3 +186,24 @@ class HistoryView(APIView):
         queryset = History.objects.filter(user=request.user).order_by("-time")
         serializer = HistorySerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SearchTrackView(generics.ListAPIView):
+    search_fields = ["track_title", "album__album_title"]
+    filter_backends = (filters.SearchFilter,)
+    queryset = Track.objects.all()
+    serializer_class = TrackSerializer
+
+
+class SearchAlbumView(generics.ListAPIView):
+    search_fields = ["album_title"]
+    filter_backends = (filters.SearchFilter,)
+    queryset = Album.objects.all()
+    serializer_class = ListAlbumSerializer
+
+
+class SearchArtistView(generics.ListAPIView):
+    search_fields = ["name"]
+    filter_backends = (filters.SearchFilter,)
+    queryset = Artist.objects.all()
+    serializer_class = ListArtistSerializer

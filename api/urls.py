@@ -5,6 +5,9 @@ from .views import (
     AlbumView,
     ArtistView,
     GenreView,
+    SearchAlbumView,
+    SearchArtistView,
+    SearchTrackView,
     SignUpView,
     HelloWorldTestView,
     TrackView,
@@ -35,6 +38,9 @@ urlpatterns = [
     path("likedsongs/", LikedSongsView.as_view(), name="liked_songs"),
     path("history/", HistoryView.as_view(), name="history"),
     path("test/", HelloWorldTestView.as_view(), name="hello_world_test_view"),
+    path("search/track/", SearchTrackView.as_view()),
+    path("search/albums", SearchAlbumView.as_view()),
+    path("search/artist/", SearchArtistView.as_view()),
 ]
 
 urlpatterns += router.urls
